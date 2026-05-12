@@ -1,10 +1,12 @@
 using DB_Project.Components;
+using DB_Project.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton<DbConnectionFactory>();
 
 var app = builder.Build();
 

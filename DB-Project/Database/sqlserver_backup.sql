@@ -61,25 +61,28 @@ CREATE TABLE CLINIC (
 GO
 
 -- ============================================================
+-- TABLE: VETERINARIAN
+-- ============================================================
+CREATE TABLE VETERINARIAN (
+    vetID         INT           NOT NULL PRIMARY KEY,
+    name          NVARCHAR(255) NOT NULL,
+    specialty     NVARCHAR(255) NOT NULL,
+    licenseNumber NVARCHAR(100) NOT NULL
+);
+GO
+
+-- ============================================================
 -- TABLE: MEDICAL_VISIT
 -- ============================================================
 CREATE TABLE MEDICAL_VISIT (
     visitID      INT            NOT NULL PRIMARY KEY,
     clinicID     INT            NOT NULL REFERENCES CLINIC(clinicID),
+    vetID        INT            NOT NULL REFERENCES VETERINARIAN(vetID),
+    ownerID      INT            NOT NULL,
+    petID        INT            NOT NULL,
+    visitDate    DATE           NOT NULL,
     weight_kg    DECIMAL(6, 2)  NOT NULL,
     clinicalNote NVARCHAR(MAX)  NOT NULL,
-    visitDate    DATE           NOT NULL
-);
-GO
-
--- ============================================================
--- TABLE: PET_VISIT
--- ============================================================
-CREATE TABLE PET_VISIT (
-    ownerID INT NOT NULL,
-    petID   INT NOT NULL,
-    visitID INT NOT NULL REFERENCES MEDICAL_VISIT(visitID),
-    PRIMARY KEY (ownerID, petID, visitID),
     FOREIGN KEY (ownerID, petID) REFERENCES PET(ownerID, petID)
 );
 GO
@@ -97,15 +100,15 @@ CREATE TABLE VACCINATION (
 GO
 
 -- ============================================================
--- TABLE: VETERINARIAN
+-- INDEXES
 -- ============================================================
-CREATE TABLE VETERINARIAN (
-    vetID         INT           NOT NULL PRIMARY KEY,
-    visitID       INT           NOT NULL REFERENCES MEDICAL_VISIT(visitID),
-    name          NVARCHAR(255) NOT NULL,
-    specialty     NVARCHAR(255) NOT NULL,
-    licenseNumber NVARCHAR(100) NOT NULL
-);
+CREATE INDEX idx_visitDate ON MEDICAL_VISIT(visitDate);
+GO
+CREATE INDEX idx_species ON PET(species);
+GO
+CREATE INDEX idx_boosterDueDate ON VACCINATION(boosterDueDate);
+GO
+CREATE INDEX idx_clinicID ON MEDICAL_VISIT(clinicID);
 GO
 
 -- ============================================================
