@@ -1,6 +1,45 @@
 @page "/InactiveOwners"
+@rendermode InteractiveServer
+@inject Data.Queries Queries
+
 <h3>Inactive Owners</h3>
 
+@if (_results is null)
+{
+    <p>Loading...</p>
+}
+else if (_results.Count == 0)
+{
+    <p>All owners brought their pets in last month.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Owner ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in _results)
+            {
+                <tr>
+                    <td>@r.OwnerID</td>
+                    <td>@r.Name</td>
+                    <td>@r.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    
+    private List<Models.ViewModels.InactiveOwner>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _results = await Queries.GetInactiveOwnersAsync();
+    }
 }

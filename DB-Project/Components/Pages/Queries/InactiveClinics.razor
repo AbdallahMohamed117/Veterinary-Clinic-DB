@@ -1,6 +1,43 @@
 @page "/InactiveClinics"
+@rendermode InteractiveServer
+@inject Data.Queries Queries
+
 <h3>Inactive Clinics</h3>
 
+@if (_results is null)
+{
+    <p>Loading...</p>
+}
+else if (_results.Count == 0)
+{
+    <p>All clinics had visits last month.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Clinic ID</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in _results)
+            {
+                <tr>
+                    <td>@r.ClinicID</td>
+                    <td>@r.Location</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    
+    private List<Models.ViewModels.InactiveClinic>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _results = await Queries.GetInactiveClinicsAsync();
+    }
 }

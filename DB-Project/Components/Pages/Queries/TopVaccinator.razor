@@ -1,6 +1,45 @@
 @page "/TopVaccinator"
+@rendermode InteractiveServer
+@inject Data.Queries Queries
+
 <h3>Top Vaccinator</h3>
 
+@if (_results is null)
+{
+    <p>Loading...</p>
+}
+else if (_results.Count == 0)
+{
+    <p>No data found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Vet ID</th>
+                <th>Name</th>
+                <th>Vaccination Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in _results)
+            {
+                <tr>
+                    <td>@r.VetID</td>
+                    <td>@r.Name</td>
+                    <td>@r.VaccinationCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    
+    private List<Models.ViewModels.TopVaccinator>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _results = await Queries.GetTopVaccinatorAsync();
+    }
 }
