@@ -1,6 +1,43 @@
 @page "/TopSpecies"
+@rendermode InteractiveServer
+@inject Data.Queries Queries
+
 <h3>Top Species</h3>
 
+@if (_results is null)
+{
+    <p>Loading...</p>
+}
+else if (_results.Count == 0)
+{
+    <p>No data found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Species</th>
+                <th>Visit Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in _results)
+            {
+                <tr>
+                    <td>@r.Species</td>
+                    <td>@r.VisitCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    
+    private List<Models.ViewModels.SpeciesVisitCount>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _results = await Queries.GetTopSpeciesAsync();
+    }
 }

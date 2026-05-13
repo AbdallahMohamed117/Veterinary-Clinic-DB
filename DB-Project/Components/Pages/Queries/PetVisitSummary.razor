@@ -1,6 +1,47 @@
 @page "/PetVisitSummary"
+@rendermode InteractiveServer
+@inject Data.Queries Queries
+
 <h3>Pet Visit Summary</h3>
 
+@if (_results is null)
+{
+    <p>Loading...</p>
+}
+else if (_results.Count == 0)
+{
+    <p>No pets found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Owner ID</th>
+                <th>Pet ID</th>
+                <th>Pet Name</th>
+                <th>Visit Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in _results)
+            {
+                <tr>
+                    <td>@r.OwnerID</td>
+                    <td>@r.PetID</td>
+                    <td>@r.PetName</td>
+                    <td>@r.VisitCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    
+    private List<Models.ViewModels.PetVisitSummary>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _results = await Queries.GetPetVisitsSummaryAsync();
+    }
 }

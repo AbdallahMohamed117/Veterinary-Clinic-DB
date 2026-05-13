@@ -1,6 +1,49 @@
 @page "/ClinicVaccines"
+@rendermode InteractiveServer
+@inject Data.Queries Queries
+
 <h3>Clinic Vaccines</h3>
 
+@if (_results is null)
+{
+    <p>Loading...</p>
+}
+else if (_results.Count == 0)
+{
+    <p>No vaccinations were administered last month.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Clinic ID</th>
+                <th>Location</th>
+                <th>Vaccine Type</th>
+                <th>Batch Number</th>
+                <th>Visit Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in _results)
+            {
+                <tr>
+                    <td>@r.ClinicID</td>
+                    <td>@r.Location</td>
+                    <td>@r.VaccineType</td>
+                    <td>@r.BatchNumber</td>
+                    <td>@r.VisitDate.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
-    
+    private List<Models.ViewModels.ClinicVaccine>? _results;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _results = await Queries.GetClinicVaccinesAsync();
+    }
 }
