@@ -21,7 +21,7 @@ public class Queries(DbConnectionFactory connectionFactory)
             GROUP BY P.species
             ORDER BY VisitCount DESC;";
 
-        using var connection = connectionFactory.CreateConnection();
+        using var connection = connectionFactory.Create();
         var result = await connection.QueryAsync<SpeciesVisitCount>(query);
         return result.ToList();
     }
@@ -38,7 +38,7 @@ public class Queries(DbConnectionFactory connectionFactory)
                   AND YEAR(visitDate) = YEAR(DATEADD(month, -1, GETDATE()))
             );";
 
-        using var connection = connectionFactory.CreateConnection();
+        using var connection = connectionFactory.Create();
         var result = await connection.QueryAsync<InactiveClinic>(query);
         return result.ToList();
     }
@@ -55,7 +55,7 @@ public class Queries(DbConnectionFactory connectionFactory)
             GROUP BY V.vetID, V.name
             ORDER BY VacCount DESC;";
 
-        using var connection = connectionFactory.CreateConnection();
+        using var connection = connectionFactory.Create();
         var result = await connection.QueryAsync<TopVaccinator>(query);
         return result.ToList();
     }
