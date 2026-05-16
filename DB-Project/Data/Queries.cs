@@ -12,9 +12,10 @@ public class Queries(DbConnectionFactory connectionFactory)
     public async Task<List<SpeciesVisitCount>> GetTopSpeciesAsync()
     {
         var query = @"
-            SELECT TOP 1 P.species, COUNT(MV.visitID) AS VisitCount
+            SELECT TOP 1 P.species, COUNT(PV.visitID) AS VisitCount
             FROM PET P
-            JOIN MEDICAL_VISIT MV ON P.ownerID = MV.ownerID AND P.petID = MV.petID
+            JOIN PET_VISIT PV ON P.ownerID = PV.ownerID AND P.petID = PV.petID
+            JOIN MEDICAL_VISIT MV ON PV.visitID = MV.visitID
             WHERE MONTH(MV.visitDate) = MONTH(DATEADD(month, -1, GETDATE())) 
               AND YEAR(MV.visitDate) = YEAR(DATEADD(month, -1, GETDATE()))
             GROUP BY P.species
@@ -68,10 +69,11 @@ public class Queries(DbConnectionFactory connectionFactory)
             SELECT O.ownerID, O.name, O.email
             FROM OWNER O
             WHERE O.ownerID NOT IN (
-                SELECT DISTINCT ownerID
-                FROM MEDICAL_VISIT
-                WHERE MONTH(visitDate) = MONTH(DATEADD(month, -1, GETDATE())) 
-                  AND YEAR(visitDate) = YEAR(DATEADD(month, -1, GETDATE()))
+                SELECT DISTINCT PV.ownerID
+                FROM PET_VISIT PV
+                JOIN MEDICAL_VISIT MV ON PV.visitID = MV.visitID
+                WHERE MONTH(MV.visitDate) = MONTH(DATEADD(month, -1, GETDATE())) 
+                  AND YEAR(MV.visitDate) = YEAR(DATEADD(month, -1, GETDATE()))
             );";
 
         using var connection = connectionFactory.Create();
@@ -100,9 +102,10 @@ public class Queries(DbConnectionFactory connectionFactory)
     public async Task<List<PetVisitSummary>> GetPetVisitsSummaryAsync()
     {
         var query = @"
-            SELECT P.ownerID, P.petID, P.name AS PetName, COUNT(MV.visitID) AS VisitCount
+            SELECT P.ownerID, P.petID, P.name AS PetName, COUNT(PV.visitID) AS VisitCount
             FROM PET P
-            LEFT JOIN MEDICAL_VISIT MV ON P.ownerID = MV.ownerID AND P.petID = MV.petID
+            LEFT JOIN PET_VISIT PV ON P.ownerID = PV.ownerID AND P.petID = PV.petID
+            LEFT JOIN MEDICAL_VISIT MV ON PV.visitID = MV.visitID
                 AND YEAR(MV.visitDate) = YEAR(GETDATE())
             GROUP BY P.ownerID, P.petID, P.name
             ORDER BY P.ownerID, P.petID;";
